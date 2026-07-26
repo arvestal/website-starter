@@ -12,6 +12,11 @@ describe('GET /', () => {
     const res = await request(app).get('/');
     expect(res.text).not.toContain('rel="canonical"');
   });
+
+  it('falls back to a "dev" cache-busting version when RAILWAY_GIT_COMMIT_SHA is unset', async () => {
+    const res = await request(app).get('/');
+    expect(res.text).toContain('/css/main.css?v=dev');
+  });
 });
 
 describe('GET /health', () => {

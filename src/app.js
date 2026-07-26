@@ -8,6 +8,7 @@ const helpers = require('./lib/helpers');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+const ASSET_VERSION = process.env.RAILWAY_GIT_COMMIT_SHA || 'dev';
 
 // Set this to the site's bare domain once it has one (e.g. "example.com").
 // Leave blank during early development — the www-redirect and canonical-URL
@@ -40,6 +41,7 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   res.locals.currentYear = new Date().getFullYear();
   res.locals.canonicalUrl = SITE_HOST ? `https://${SITE_HOST}${req.path}` : undefined;
+  res.locals.assetVersion = ASSET_VERSION;
   next();
 });
 

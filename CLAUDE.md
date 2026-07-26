@@ -131,6 +131,17 @@ used inline (`{{helperName a b}}`), a plain function is fine.
   resources.
 - `/health` returning `200 {"status":"ok"}` is wired up from the start for Railway's
   healthcheck gate, even before anything else exists.
+- **Static assets need cache-busting or CSS/JS changes won't show up for returning visitors.**
+  Cloudflare (and most CDNs) stamp static file extensions with a long browser `Cache-Control`
+  (observed: `public, max-age=14400`, 4 hours) regardless of what the origin sends — a returning
+  visitor's browser won't even re-check the server until that window expires. This template
+  already handles it: `src/app.js` sets `ASSET_VERSION` from Railway's auto-injected
+  `RAILWAY_GIT_COMMIT_SHA` (falling back to `'dev'` locally) and exposes it as
+  `res.locals.assetVersion`; `views/layouts/main.hbs` appends it to the stylesheet link
+  (`/css/main.css?v={{assetVersion}}`) so every deploy gets a new URL and bypasses stale caches.
+  Keep this wiring if you add more static assets (JS files, etc.) rather than dropping it as
+  unnecessary complexity — allenvestal.com shipped a CSS change that silently didn't render for
+  the project owner until a hard refresh, purely because of this.
 
 ### Deployment (custom domain + Cloudflare DNS)
 
