@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{#if pageTitle}}{{pageTitle}} — {{/if}}Site Name</title>
+  <meta name="description" content="{{#if metaDescription}}{{metaDescription}}{{else}}Replace with a default site description.{{/if}}">
+  <meta name="robots" content="{{#if noIndex}}noindex, nofollow{{else}}index, follow{{/if}}">
+  {{#if canonicalUrl}}<link rel="canonical" href="{{canonicalUrl}}">{{/if}}
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">Site Name</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    {{{body}}}
+  </main>
+
+  <footer class="footer">
+    <p>&copy; {{currentYear}} Site Name. All rights reserved.</p>
+  </footer>
+</body>
+</html>
