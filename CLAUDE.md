@@ -107,6 +107,19 @@ used inline (`{{helperName a b}}`), a plain function is fine.
 
 - Push to the deploy branch (`main` or `master` — pick one and be consistent) → Railway
   auto-deploys via its GitHub connection, building with Railpack (no Dockerfile needed).
+- **Auto-deploy-on-push is not automatic just because the service has a connected source repo.**
+  It requires an explicit GitHub push deploy trigger (`Service.repoTriggers` in Railway's API —
+  there's no CLI/dashboard command for it as of this writing; create it with the
+  `deploymentTriggerCreate` GraphQL mutation, `{ branch, checkSuites: true, environmentId,
+  projectId, provider: "github", repository: "<owner>/<repo>", serviceId }`). Check for it early
+  when standing up a new project from this template — don't assume it exists just because
+  `service.source.repo` is set; query `repoTriggers { edges { node { branch } } }` and confirm it's
+  non-empty. allenvestal.com had `source.repo` set but an empty `repoTriggers` list for a while
+  after a repo rename, so every push silently required a manual redeploy (see below) until this
+  was caught.
+  - If `deploymentTriggerCreate` fails with "no one in the project has access to it", Railway's
+    GitHub App isn't authorized on that repo — grant it at `github.com/settings/installations`
+    (switch to "All repositories" or add the repo explicitly), then retry.
 - **Redeploying an already-connected service does not necessarily pull the newest commit.**
   `railway redeploy` re-deploys whatever commit is *already* built. To force a fresh pull after
   pushing, reconnect the source: `railway service source connect --repo <owner>/<repo> --branch
